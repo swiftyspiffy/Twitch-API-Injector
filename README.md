@@ -4,6 +4,7 @@ Chrome and Firefox extension for injecting Client ID and Authorization headers a
 ### Setup
 Install the extension for either Chrome or Firefox below. Once installed, clicking on the extension will show a form with 3 text boxes. These need to be
 populated in order for the extension to work. The steps to obtain each value are below:
+
 ##### Client ID
 To get a client id, you'll need to register an application on dev.twitch.tv. To do that, login to [dev.twitch.tv](https://dev.twitch.tv) with your Twitch
 account. Create a new application [here](https://dev.twitch.tv/console/apps/create). Once created, the client id should be on the Manage Application for
@@ -15,6 +16,7 @@ will appear on this page.
 
 ##### Refresh Token
 To generate a refresh token, you can either follow the Twitch authentication documentation or use a third party service.
+
 **Twitch Authentication Documentation**
 1. Documentation: https://dev.twitch.tv/docs/authentication#getting-tokens
 2. If done correctly, you will get a JSON response that includes an access token and a refresh token. Copy the refresh token and paste it in to the Refresh Token text box in the extension.
@@ -40,11 +42,11 @@ Twitch Users call with no parameters (ie credentials user):
 ![users with no params](screenshots/users_with_no_params.png)
 
 Twitch Users call with parameters:
-![form ui](screenshots/users_with_parames.png)
+![users with params](screenshots/users_with_params.png)
 
 ## Chrome/Firefox Links
-- Chrome: https://chrome.google.com/webstore/detail/twitch-api-injector/dkkaeileenafgjaebkckcldgmjbidbbi
-- Firefox: https://addons.mozilla.org/en-US/firefox/addon/twitch-api-injector/
+ - Chrome: https://chrome.google.com/webstore/detail/twitch-api-injector/dkkaeileenafgjaebkckcldgmjbidbbi
+ - Firefox: https://addons.mozilla.org/en-US/firefox/addon/twitch-api-injector/
 
 ## Credits
 [@3v](https://twitter.com/3ventic): Had the original idea, Chrome extension was pulled due to an attempt to remove unnecessary permissions, Chrome requiring additional effort, and the Chrome extension getting abandoned. Firefox extension can be found [here](https://addons.mozilla.org/en-US/firefox/addon/twitch-client-id-injector/).
