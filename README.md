@@ -1,3 +1,5 @@
+![logo leek](logo.png)
+
 # Twitch-API-Injector
 Chrome and Firefox extension for injecting Client ID and Authorization headers automatically into requests made against https://api.twitch.tv/helix/*
 
@@ -49,5 +51,5 @@ Twitch Users call with parameters:
  - Firefox: https://addons.mozilla.org/en-US/firefox/addon/twitch-api-injector/
 
 ## Credits
-[@3v](https://twitter.com/3ventic): Had the original idea, Chrome extension was pulled due to an attempt to remove unnecessary permissions, Chrome requiring additional effort, and the Chrome extension getting abandoned. Firefox extension can be found [here](https://addons.mozilla.org/en-US/firefox/addon/twitch-client-id-injector/).
-[@Syzuna_](https://twitter.com/Syzuna_): Tested the extension for me :)
+ - [@3v](https://twitter.com/3ventic): Had the original idea, Chrome extension was pulled due to an attempt to remove unnecessary permissions, Chrome requiring additional effort, and the Chrome extension getting abandoned. Firefox extension can be found [here](https://addons.mozilla.org/en-US/firefox/addon/twitch-client-id-injector/).
+ - [@Syzuna_](https://twitter.com/Syzuna_): Tested the extension for me :)
