@@ -15,11 +15,9 @@ storage.get(['client_id', 'access_token'], function(result) {
 storage.onChanged.addListener(function(changes, area) {
     console.log(changes);
     if ("client_id" in changes) {
-        console.log("client id storage updated: " + changes.client_id.newValue);
         clientId = changes.client_id.newValue;
     }
     if ("access_token" in changes) {
-        console.log("access token storage updated: " + changes.access_token.newValue);
         accessToken = changes.access_token.newValue;
     }
 });
