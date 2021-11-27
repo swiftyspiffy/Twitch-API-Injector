@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<title>Twitch API Injector</title>
+<div style="color: gray; font-family: Arial, serif;">
+    <img src="twitch.png" style="text-align: center; width: 200px;"/><br>
+    <div id="main_ui">
+        <table>
+            <tr>
+                <table width="100%">
+                    <tr>
+                        <td colspan=2>
+                            ClientId <a href="#" id="help_client_id" name="help_client_id">(help)</a><br>
+                            <input type="text" id="client_id" name="client_id" style="text-align: center; width: 200px"></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            Client Secret <a href="#" id="help_client_secret" name="help_client_secret">(help)</a><br>
+                            <input type="text" id="client_secret" name="client_secret" style="text-align: center; width: 200px"></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            Refresh Token <a href="#" id="help_refresh_token" name="help_refresh_token">(help)</a><br>
+                            <input type="text" id="refresh_token" name="refresh_token" style="text-align: center; width: 200px"></input>
+                        </td>
+                    </tr>
+                </table>
+            </tr>
+            <tr>
+                <center><button id="generate_bearer" name="generate_bearer">Generate Bearer Token</button></center>
+                <br>
+            </tr>
+            <tr>
+                <table width="100%">
+                    <tr>
+                        <td colspan=2>Bearer: <br>&nbsp;&nbsp;&nbsp;<b id="access_token" name="access_token"></b> <a id="copy_access_token" name="copy_access_token" href="#" style="display: none;">(copy)</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>Username: <br>&nbsp;&nbsp;&nbsp;<b id="username" name="username"></b> <a id="copy_username" name="copy_username" href="#" style="display: none;">(copy)</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>User ID: <br>&nbsp;&nbsp;&nbsp;<b id="user_id" name="user_id"></b> <a id="copy_user_id" name="copy_user_id" href="#" style="display: none;">(copy)</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>Generated at: <br>&nbsp;&nbsp;&nbsp;<b id="generated_at" name="generated_at"></b> <a id="copy_generated_at" name="copy_generated_at" href="#" style="display: none;">(copy)</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>Is Valid <a id="check_auth" name="check_auth" href="#" style="display: none;">(check)</a>: <br>&nbsp;&nbsp;&nbsp;<b id="is_valid" name="is_valid"></b></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>Scopes: <br>&nbsp;&nbsp;&nbsp;<b id="scopes" name="scopes"></b> <a id="copy_scopes" name="copy_scopes" href="#" style="display: none;">(copy)</a></td>
+                    </tr>
+                </table>
+            </tr>
+        </table>
+    </div>
+</div>
+<script src="main.js"></script>
+<script src="execute.js"></script>
