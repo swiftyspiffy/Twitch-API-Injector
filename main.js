@@ -97,12 +97,6 @@ function getCurrentUser() {
 
     xhr.open('GET', 'https://api.twitch.tv/helix/users', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    // normally we could let our execute.js injector insert these values, but there'a scenario
-    // where on first use (prior to access token being stored), the storage has already been accessed
-    // and cached, meaning the users call will fail because access_token will be undefined. for that
-    // secnario, we'll manually pass these values to be safe
-    xhr.setRequestHeader("Client-ID", clientIdEl.value);
-    xhr.setRequestHeader("Authorization", "Bearer " + document.getElementById("access_token").innerHTML);
     xhr.send();
 }
 
