@@ -5,7 +5,7 @@
       },
       "default_popup": "form.html"
    },
-   "description": "Inject client id and access token in api requests (and automatically refresh access token)",
+   "description": "Inject client id and access token headers into api requests automatically.",
    "icons": {
       "150": "icon.png"
    },
@@ -20,7 +20,7 @@
       "scripts": ["execute.js"],
       "persistent": true
    },
-   "short_name": "TwitchAPIInject",
+   "short_name": "TwitchAPIInjector",
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.0"
+   "version": "1.1"
 }
