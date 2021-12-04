@@ -59,7 +59,7 @@ function generateAccessToken() {
             updateRefreshToken(data.refresh_token);
             updateScopes(data.scope);
             updateGeneratedAt();
-            getCurrentUser();
+            getCurrentUser(false);
         } else {
             // bad response, assume invalid
             updateIsValid(false);
@@ -76,7 +76,7 @@ function generateAccessToken() {
     }));
 }
 
-function getCurrentUser() {
+function getCurrentUser(refreshOnFail = true) {
     var xhr = new XMLHttpRequest();
     // we defined the xhr
 
@@ -92,6 +92,9 @@ function getCurrentUser() {
         } else {
             // bad response, assume invalid
             updateIsValid(false);
+            if (refreshOnFail) {
+                generateAccessToken();
+            }
         }
     };
 
