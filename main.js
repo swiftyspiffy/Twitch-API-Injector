@@ -4,6 +4,8 @@ var storage = chrome.storage.local;
 var clientIdEl = document.getElementById("client_id");
 var clientSecretEl = document.getElementById("client_secret");
 var refreshTokenEl = document.getElementById("refresh_token");
+var codeEl = document.getElementById("code");
+var redirectEl = document.getElementById("redirect");
 clientIdEl.addEventListener('input', e => { 
     storage.set({'client_id': clientIdEl.value});
 });
@@ -13,9 +15,15 @@ clientSecretEl.addEventListener('input', e => {
 refreshTokenEl.addEventListener('input', e => { 
     storage.set({'refresh_token': refreshTokenEl.value});
 });
+codeEl.addEventListener('input', e => {
+    storage.set({'code': codeEl.value});
+});
+redirectEl.addEventListener('input', e => {
+    storage.set({'redirect': redirectEl.value});
+});
 window.addEventListener("load", function(){
     updateIsValid(null);
-    storage.get(['client_id', 'client_secret', 'refresh_token', 'generated_at', 'scopes', 'access_token'], function(result) {
+    storage.get(['client_id', 'client_secret', 'refresh_token', 'code', 'redirect', 'generated_at', 'scopes', 'access_token'], function(result) {
         if(result != undefined) {
             if(result.client_id != undefined) {
                 clientIdEl.value = result.client_id;
@@ -25,6 +33,12 @@ window.addEventListener("load", function(){
             }
             if(result.refresh_token != undefined) {
                 refreshTokenEl.value = result.refresh_token;
+            }
+            if(result.code != undefined) {
+                codeEl.value = result.code;
+            }
+            if(result.redirect != undefined) {
+                redirectEl.value = result.redirect;
             }
             if(result.generated_at != undefined) {
                 updateGeneratedAt(result.generated_at);
@@ -41,15 +55,40 @@ window.addEventListener("load", function(){
 });
 
 // static events
-document.getElementById("generate_bearer").addEventListener('click', function (e) { generateAccessToken(); });
+document.getElementById("generate_bearer").addEventListener('click', function (e) { handleGenerateClick(); });
 document.getElementById("check_auth").addEventListener('click', function(e) { getCurrentUser(); });
 document.getElementById("help_client_id").addEventListener('click', function(e) { helpClientId(); });
 document.getElementById("help_client_secret").addEventListener('click', function(e) { helpClientSecret(); });
 document.getElementById("help_refresh_token").addEventListener('click', function(e) { helpRefreshToken(); });
+document.getElementById("help_code").addEventListener('click', function(e) { helpCode(); } );
+document.getElementById("help_redirect").addEventListener('click', function(e) { helpRedirect(); } );
+
+function handleGenerateClick() {
+    if(clientIdEl.value.length == 0) {
+        alert("Client id field must be populated.");
+        return;
+    }
+    if(clientSecretEl.value.length == 0) {
+        alert("Client secret field must be populated.");
+        return;
+    }
+    if(codeEl.value.length > 0 && refreshTokenEl.value.length > 0) {
+        alert("The code/redirect fields and refresh field cannot both be populated. Please populate only one of them.");
+        return;
+    }
+    if(codeEl.value.length != 0 && redirectEl.value.length == 0) {
+        alert("If Code field is populated, Redirect field must also be populated.");
+        return;
+    }
+    if(codeEl.value.length == 0 && refreshTokenEl.value.length == 0) {
+        alert("Please populate either the Code field or the Refresh field.");
+        return;
+    }
+    generateAccessToken();
+}
 
 function generateAccessToken() {
     var xhr = new XMLHttpRequest();
-    // we defined the xhr
 
     xhr.onreadystatechange = function () {
         if (this.readyState != 4) return;
@@ -60,20 +99,37 @@ function generateAccessToken() {
             updateScopes(data.scope);
             updateGeneratedAt();
             getCurrentUser(false);
+            // code is only used one time and then becomes invalid
+            updateCode("");
         } else {
             // bad response, assume invalid
             updateIsValid(false);
         }
     };
 
-    xhr.open('POST', 'https://id.twitch.tv/oauth2/token', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({
-        client_id: clientIdEl.value,
-        client_secret: clientSecretEl.value,
-        refresh_token: refreshTokenEl.value,
-        grant_type: 'refresh_token'
-    }));
+    // since the "code" generates a refresh token and is a one time use,
+    // we should always assume that if both fields exist here, that the 
+    // refresh token is valid and should be used
+    if(refreshTokenEl.value.length > 0) {
+        xhr.open('POST', 'https://id.twitch.tv/oauth2/token', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            client_id: clientIdEl.value,
+            client_secret: clientSecretEl.value,
+            refresh_token: refreshTokenEl.value,
+            grant_type: 'refresh_token'
+        }));
+    } else if(codeEl.value.length > 0) {
+        xhr.open('POST', 'https://id.twitch.tv/oauth2/token', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            client_id: clientIdEl.value,
+            client_secret: clientSecretEl.value,
+            code: codeEl.value,
+            redirect_uri: redirectEl.value,
+            grant_type: 'authorization_code'
+        }));
+    }
 }
 
 function getCurrentUser(refreshOnFail = true) {
@@ -100,6 +156,8 @@ function getCurrentUser(refreshOnFail = true) {
 
     xhr.open('GET', 'https://api.twitch.tv/helix/users', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Client-ID', clientIdEl.value);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + document.getElementById("access_token").innerHTML);
     xhr.send();
 }
 
@@ -118,7 +176,11 @@ function updateUserId(userId) {
 }
 function updateRefreshToken(refresh) {
     storage.set({'refresh_token': refresh});
-    document.getElementById("refresh_token").innerHTML = refresh;
+    refreshTokenEl.value = refresh;
+}
+function updateCode(code) {
+    storage.set({"code": code});
+    codeEl.value = code;
 }
 function updateScopes(scopes) {
     storage.set({'scopes': scopes});
@@ -181,6 +243,14 @@ function helpClientSecret() {
 
 function helpRefreshToken() {
     alert("Without third party tool:\n 1. Follow Twitch's authentication documentation: https://dev.twitch.tv/docs/authentication#getting-tokens\n\nWith third party tool:\n1. Set your redirect URL on your application on https://dev.twitch.tv to https://twitchtokengenerator.com\n 2. Open TwitchTokenGenerator.com\n 3. Insert your Client Id and Client Secret in the textboxes at the top\n 4. Select the scopes you are interested in and click Generate\n 5. At the end of the process, you'll get a Refresh token you can copy.");
+}
+
+function helpCode() {
+    alert("You can use a Code value you received during the authentication process. For more information on how to get a 'code' value, please check the TwitchDev authentication getting tokens documentation.");
+}
+
+function helpRedirect() {
+    alert("When using the Code value to generate a bearer token, a redirect uri is required. Provide that value here (as specified in your TwitchDev application).");
 }
 
 // From: https://stackoverflow.com/questions/10211145/getting-current-date-and-time-in-javascript
