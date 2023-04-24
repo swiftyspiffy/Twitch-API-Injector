@@ -22,12 +22,19 @@ storage.onChanged.addListener(function(changes, area) {
     }
 });
 
-chrome.webRequest.onBeforeSendHeaders.addListener(
-    function(details) {
-        details.requestHeaders.push({name: "Client-ID", value: clientId});
-        details.requestHeaders.push({name: "Authorization", value: "Bearer " + accessToken});
-      return { requestHeaders: details.requestHeaders };
-    },
-    {urls: ['https://api.twitch.tv/helix/*']},
-    ['blocking', 'requestHeaders']
-);
+chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: [], // IDs of rules to remove
+    addRules: [{
+        id: 1, // A unique ID for your rule
+        priority: 1, // The priority of your rule
+        action: {
+            type: "modifyHeaders",
+            requestHeaders: [
+                { "header": "Client-ID", "operation": "set", "value": clientId},
+                { "header": "Authorization", "operation": "set", "value": "Bearer " + accessToken}
+            ]
+        },
+        condition: { "urlFilter": "https://api.twitch.tv/helix/*", "resourceTypes": ["main_frame"] }
+    }],
+    removeRuleIds: [1]
+});

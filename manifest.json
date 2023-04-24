@@ -1,5 +1,5 @@
 {
-   "browser_action": {
+   "action": {
       "default_icon": {
          "150": "icon.png"
       },
@@ -9,18 +9,17 @@
    "icons": {
       "150": "icon.png"
    },
-   "manifest_version": 2,
+   "manifest_version": 3,
    "name": "Twitch API Injector",
-   "options_ui": {
-      "chrome_style": true,
-      "page": "form.html"
-   },
-   "permissions": [ "https://api.twitch.tv/helix/*","webRequest","webRequestBlocking", "storage"],
+   "options_page": "form.html",
+   "permissions": ["declarativeNetRequest", "storage"],
+   "host_permissions": [
+      "https://api.twitch.tv/helix/*"
+   ],
    "background": {
-      "scripts": ["execute.js"],
-      "persistent": true
+      "service_worker": "execute.js"
    },
    "short_name": "TwitchAPIInjector",
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.1"
+   "version": "1.2"
 }
