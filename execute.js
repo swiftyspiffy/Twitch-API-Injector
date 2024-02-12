@@ -9,7 +9,9 @@ storage.get(['expires_at'], function (result) {
 		if (result.expires_at > now) {
 			timeout = setTimeout(refresh, result.expires_at - now)
 		} else {
-			refresh()
+			if(result.expires_at > 0) {
+				refresh()
+			}
 		}
 	}
 });
@@ -53,7 +55,9 @@ storage.onChanged.addListener(function (changes, area) {
 		if (changes.expires_at.newValue > now) {
 			timeout = setTimeout(refresh, changes.expires_at.newValue - now)
 		} else {
-			refresh()
+			if(changes.expires_at.newValue > 0) {
+				refresh()
+			}
 		}
 	}
 });
@@ -74,7 +78,11 @@ function refresh() {
 		}).then(res => {
 			if (res.status === 200) {
 				res.json().then(data => {
-					storage.set({ 'access_token': data.access_token, 'refresh_token': data.refresh_token, 'expires_at': Date.now() + (data.expires_in * 1000) })
+					if(data.expires_in === 0) {
+						storage.set({ 'access_token': data.access_token, 'refresh_token': data.refresh_token, 'expires_at': -1 })
+					} else{
+						storage.set({ 'access_token': data.access_token, 'refresh_token': data.refresh_token, 'expires_at': Date.now() + (data.expires_in * 1000) })
+					}
 				})
 			} else {
 				res.text().then(body => {

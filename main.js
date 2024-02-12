@@ -94,7 +94,11 @@ function generateAccessToken() {
         if (this.readyState != 4) return;
         if (this.status == 200) {
             var data = JSON.parse(this.responseText);
-            updateBearerToken(data.access_token, Date.now()+(data.expires_in*1000));
+			if(data.expires_in === 0) {
+				updateBearerToken(data.access_token, -1);
+			} else {
+				updateBearerToken(data.access_token, Date.now()+(data.expires_in*1000));
+			}
             updateRefreshToken(data.refresh_token);
             updateScopes(data.scope);
             updateGeneratedAt();
