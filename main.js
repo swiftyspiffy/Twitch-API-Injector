@@ -94,7 +94,7 @@ function generateAccessToken() {
         if (this.readyState != 4) return;
         if (this.status == 200) {
             var data = JSON.parse(this.responseText);
-            updateBearerToken(data.access_token);
+            updateBearerToken(data.access_token, Date.now()+(data.expires_in*1000));
             updateRefreshToken(data.refresh_token);
             updateScopes(data.scope);
             updateGeneratedAt();
@@ -162,8 +162,8 @@ function getCurrentUser(refreshOnFail = true) {
 }
 
 // ui stuff
-function updateBearerToken(token) {
-    storage.set({'access_token': token});
+function updateBearerToken(token, expires_at) {
+    storage.set({'access_token': token, 'expires_at': expires_at});
     document.getElementById("access_token").innerHTML = token;
 }
 function updateUsername(username) {

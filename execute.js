@@ -1,6 +1,18 @@
 var storage = chrome.storage.local;
+var timeout
 
 getClientIdAndAccessTokenAndSetRules();
+
+storage.get(['expires_at'], function (result) {
+	if (result != undefined && result.expires_at != undefined) {
+		let now = Date.now()
+		if (result.expires_at > now) {
+			timeout = setTimeout(refresh, result.expires_at - now)
+		} else {
+			refresh()
+		}
+	}
+});
 
 function getClientIdAndAccessTokenAndSetRules() {
     storage.get(['client_id', 'access_token'], function(result) {
@@ -31,7 +43,44 @@ function getClientIdAndAccessTokenAndSetRules() {
     });
 }
 
-storage.onChanged.addListener(function(changes, area) {
-    console.log("storage updated! re-setting rules");
-    getClientIdAndAccessTokenAndSetRules();
+
+storage.onChanged.addListener(function (changes, area) {
+	console.log("storage updated! re-setting rules");
+	getClientIdAndAccessTokenAndSetRules();
+	if (Object.keys(changes).includes("expires_at")) {
+		let now = Date.now()
+		clearTimeout(timeout)
+		if (changes.expires_at.newValue > now) {
+			timeout = setTimeout(refresh, changes.expires_at.newValue - now)
+		} else {
+			refresh()
+		}
+	}
 });
+
+function refresh() {
+	storage.get(['client_id', 'client_secret', 'refresh_token'], function (result) {
+		fetch("https://id.twitch.tv/oauth2/token", {
+			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				client_id: result.client_id,
+				client_secret: result.client_secret,
+				refresh_token: result.refresh_token,
+				grant_type: 'refresh_token'
+			})
+		}).then(res => {
+			if (res.status === 200) {
+				res.json().then(data => {
+					storage.set({ 'access_token': data.access_token, 'refresh_token': data.refresh_token, 'expires_at': Date.now() + (data.expires_in * 1000) })
+				})
+			} else {
+				res.text().then(body => {
+					console.error("Failed refreshing token", body)
+				})
+			}
+		})
+	})
+}
